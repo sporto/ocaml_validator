@@ -1,0 +1,4 @@
+(tests
+ (names validator_test)
+ (package validator)
+ (libraries alcotest validator))
