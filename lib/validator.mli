@@ -22,6 +22,10 @@ val string_is_int : (string, string, int) validator_builder
 val string_has_min_length :
   int -> (string, string, string) validator_builder
 
+(* Validate the max length of a string *)
+val string_has_max_length :
+  int -> (string, string, string) validator_builder
+
 val build1 :
   ('a -> 'final) -> ('a -> 'final, 'e errors) result
 

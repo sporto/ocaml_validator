@@ -63,6 +63,27 @@ let string_has_min_length =
     ]
 
 
+let string_has_max_length_test input len expected () =
+    let actual =
+        Validator.string_has_max_length len "Fail" input
+    in
+    check
+      (validator_result_printer string)
+      "" actual expected
+
+
+let string_has_max_length =
+    [
+      ( "Returns the string when ok",
+        `Quick,
+        string_has_max_length_test "Hello" 5 (Ok "Hello") );
+      ( "Returns the errors",
+        `Quick,
+        string_has_max_length_test "Hello" 2
+          (Error ("Fail", [ "Fail" ])) );
+    ]
+
+
 (* Complete validators *)
 
 type person_input = { name : string }
@@ -117,5 +138,7 @@ let () =
       [
         ("string_is_not_empty", string_is_not_empty);
         ("string_is_int", string_is_int);
+        ("string_has_min_length", string_has_min_length);
+        ("string_has_max_length", string_has_max_length);
         ("validators", validators);
       ]

@@ -36,14 +36,26 @@ let string_is_int : (string, string, int) validator_builder
 
 let string_has_min_length_check min value =
     if String.length value < min then
-      Some value
-    else
       None
+    else
+      Some value
 
 
 let string_has_min_length min :
     (string, string, string) validator_builder =
     Common.custom (string_has_min_length_check min)
+
+
+let string_has_max_length_check max value =
+    if String.length value > max then
+      None
+    else
+      Some value
+
+
+let string_has_max_length max :
+    (string, string, string) validator_builder =
+    Common.custom (string_has_max_length_check max)
 
 
 let validate
