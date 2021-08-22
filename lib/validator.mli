@@ -11,6 +11,12 @@ type ('err, 'input, 'output) validator =
 type ('err, 'input, 'output) validator_builder =
   'err -> ('err, 'input, 'output) validator
 
+val int_min : int -> (string, int, int) validator_builder
+(** Validate min permitted integeger *)
+
+val int_max : int -> (string, int, int) validator_builder
+(** Validate max permitted integeger *)
+
 val string_is_not_empty :
   (string, string, string) validator_builder
 (** Validate if a string is not empty *)

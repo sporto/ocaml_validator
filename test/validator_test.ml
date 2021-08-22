@@ -4,6 +4,38 @@ let validator_result_printer out =
     result out (pair string (list string))
 
 
+let int_max_test max input expected () =
+    let actual = Validator.int_max max "Fail" input in
+    check (validator_result_printer int) "" actual expected
+
+
+let int_max =
+    [
+      ( "Returns the string when not empty",
+        `Quick,
+        int_max_test 6 4 (Ok 4) );
+      ( "Returns the string when not empty",
+        `Quick,
+        int_max_test 6 8 (Error ("Fail", [ "Fail" ])) );
+    ]
+
+
+let int_min_test min input expected () =
+    let actual = Validator.int_min min "Fail" input in
+    check (validator_result_printer int) "" actual expected
+
+
+let int_min =
+    [
+      ( "Returns the string when not empty",
+        `Quick,
+        int_min_test 2 4 (Ok 4) );
+      ( "Returns the string when not empty",
+        `Quick,
+        int_min_test 6 4 (Error ("Fail", [ "Fail" ])) );
+    ]
+
+
 let string_is_not_empty_test input expected () =
     let actual =
         Validator.string_is_not_empty "Fail" input
@@ -169,10 +201,12 @@ let validators =
 let () =
     Alcotest.run "Validator"
       [
-        ("string_is_not_empty", string_is_not_empty);
-        ("string_is_int", string_is_int);
-        ("string_has_min_length", string_has_min_length);
+        ("int_max", int_max);
+        ("int_min", int_min);
         ("string_has_max_length", string_has_max_length);
+        ("string_has_min_length", string_has_min_length);
         ("string_is_email", string_is_email);
+        ("string_is_int", string_is_int);
+        ("string_is_not_empty", string_is_not_empty);
         ("validators", validators);
       ]

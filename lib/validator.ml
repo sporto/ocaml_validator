@@ -22,6 +22,24 @@ let custom
         Error (error, [ error ])
 
 
+let int_min_check (min : int) (value : int) =
+    if value < min then
+      None
+    else
+      Some value
+
+
+let int_min min = custom (int_min_check min)
+
+let int_max_check (max : int) (value : int) =
+    if value > max then
+      None
+    else
+      Some value
+
+
+let int_max max = custom (int_max_check max)
+
 let string_is_not_empty_check (value : string) :
     string option =
     if value = "" then
