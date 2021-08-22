@@ -1,44 +1,50 @@
 open Alcotest
 
-let test_hello_with_name name () =
-    let greeting = Validator.greet name in
-    let expected = "Hello " ^ name ^ "!" in
-    check string "same string" greeting expected
+let validator_result_printer out =
+    result out (pair string (list string))
 
 
-let validator_result_printer =
-    result string (pair string (list string))
-
-
-let test_string_is_not_empty input expected () =
+let string_is_not_empty_test input expected () =
     let actual =
-        Validator.string_is_not_empty "empty" input
+        Validator.string_is_not_empty "Fail" input
     in
-    check validator_result_printer "" actual expected
-
-
-let suite =
-    [
-      ("can greet Tom", `Quick, test_hello_with_name "Tom");
-      ("can greet John", `Quick, test_hello_with_name "John");
-    ]
+    check
+      (validator_result_printer string)
+      "" actual expected
 
 
 let string_is_not_empty =
     [
       ( "Returns the string when not empty",
         `Quick,
-        test_string_is_not_empty "Hello" (Ok "Hello") );
+        string_is_not_empty_test "Hello" (Ok "Hello") );
       ( "Returns the error when empty",
         `Quick,
-        test_string_is_not_empty ""
-          (Error ("empty", [ "empty" ])) );
+        string_is_not_empty_test ""
+          (Error ("Fail", [ "Fail" ])) );
+    ]
+
+
+let string_is_int_test input expected () =
+    let actual = Validator.string_is_int "Fail" input in
+    check (validator_result_printer int) "" actual expected
+
+
+let string_is_int =
+    [
+      ( "Returns the int",
+        `Quick,
+        string_is_int_test "1" (Ok 1) );
+      ( "Fails when not int",
+        `Quick,
+        string_is_int_test "a" (Error ("Fail", [ "Fail" ]))
+      );
     ]
 
 
 let () =
     Alcotest.run "validator"
       [
-        ("Validator", suite);
         ("string_is_not_empty", string_is_not_empty);
+        ("string_is_int", string_is_int);
       ]

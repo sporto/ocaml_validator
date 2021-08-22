@@ -1,12 +1,5 @@
 (** Create a record validator via composable sub-validators *)
 
-val greet : string -> string
-(** Returns a greeting message.
-
-    {4 Examples}
-
-    {[ print_endline @@ greet "Jane" ]} *)
-
 type 'err errors = 'err * 'err list
 
 type ('err, 'out) validator_result =
@@ -16,3 +9,7 @@ type ('err, 'input, 'output) validator =
   'err -> 'input -> ('err, 'output) validator_result
 
 val string_is_not_empty : (string, string, string) validator
+(** Validate if a string is not empty *)
+
+val string_is_int : (string, string, int) validator
+(* Validate if a string parses to an Int. Returns the Int if so *)
