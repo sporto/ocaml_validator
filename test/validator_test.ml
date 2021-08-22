@@ -42,6 +42,29 @@ let string_is_int =
     ]
 
 
+let string_has_min_length_test input len expected () =
+    let actual =
+        Validator.string_has_min_length len "Fail" input
+    in
+    check
+      (validator_result_printer string)
+      "" actual expected
+
+
+let string_has_min_length =
+    [
+      ( "Returns the string when ok",
+        `Quick,
+        string_has_min_length_test "Hello" 2 (Ok "Hello") );
+      ( "Returns the errors",
+        `Quick,
+        string_has_min_length_test "Hello" 8
+          (Error ("Fail", [ "Fail" ])) );
+    ]
+
+
+(* Complete validators *)
+
 type person_input = { name : string }
 
 type person_valid = { name : string }

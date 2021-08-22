@@ -34,6 +34,18 @@ let string_is_int : (string, string, int) validator_builder
     Common.custom string_is_int_check
 
 
+let string_has_min_length_check min value =
+    if String.length value < min then
+      Some value
+    else
+      None
+
+
+let string_has_min_length min :
+    (string, string, string) validator_builder =
+    Common.custom (string_has_min_length_check min)
+
+
 let validate
     (input : 'i)
     (validator : ('e, 'i, 'o) validator_builder)

@@ -18,6 +18,10 @@ val string_is_not_empty :
 val string_is_int : (string, string, int) validator_builder
 (* Validate if a string parses to an Int. Returns the Int if so *)
 
+(* Validate the min length of a string *)
+val string_has_min_length :
+  int -> (string, string, string) validator_builder
+
 val build1 :
   ('a -> 'final) -> ('a -> 'final, 'e errors) result
 
