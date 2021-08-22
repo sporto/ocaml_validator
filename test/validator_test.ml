@@ -10,20 +10,35 @@ let validator_result_printer =
     result string (pair string (list string))
 
 
-let test_string_is_not_empty input () =
-    check validator_result_printer "whatever"
-      (Validator.string_is_not_empty "empty" input)
-      (Ok "Hello")
+let test_string_is_not_empty input expected () =
+    let actual =
+        Validator.string_is_not_empty "empty" input
+    in
+    check validator_result_printer "" actual expected
 
 
 let suite =
     [
       ("can greet Tom", `Quick, test_hello_with_name "Tom");
       ("can greet John", `Quick, test_hello_with_name "John");
-      ( "check if empty",
-        `Quick,
-        test_string_is_not_empty "Hello" );
     ]
 
 
-let () = Alcotest.run "validator" [ ("Validator", suite) ]
+let string_is_not_empty =
+    [
+      ( "Returns the string when not empty",
+        `Quick,
+        test_string_is_not_empty "Hello" (Ok "Hello") );
+      ( "Returns the error when empty",
+        `Quick,
+        test_string_is_not_empty ""
+          (Error ("empty", [ "empty" ])) );
+    ]
+
+
+let () =
+    Alcotest.run "validator"
+      [
+        ("Validator", suite);
+        ("string_is_not_empty", string_is_not_empty);
+      ]
