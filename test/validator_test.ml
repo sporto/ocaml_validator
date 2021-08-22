@@ -84,6 +84,39 @@ let string_has_max_length =
     ]
 
 
+let string_is_email_test input expected () =
+    let actual = Validator.string_is_email "Fail" input in
+    check
+      (validator_result_printer string)
+      "" actual expected
+
+
+let string_is_email =
+    let error = Error ("Fail", [ "Fail" ]) in
+    [
+      ( "Is email",
+        `Quick,
+        string_is_email_test "sam@sample.com"
+          (Ok "sam@sample.com") );
+      ( "Two @",
+        `Quick,
+        string_is_email_test "sam@@sample.com" error );
+      ( "Start with @",
+        `Quick,
+        string_is_email_test "@sample.com" error );
+      ( "End with @",
+        `Quick,
+        string_is_email_test "sam@" error );
+      ( "Extra chars",
+        `Quick,
+        string_is_email_test "young-sam@sample_biz.com"
+          (Ok "young-sam@sample_biz.com") );
+      ( "Not email",
+        `Quick,
+        string_is_email_test "Hello" error );
+    ]
+
+
 (* Complete validators *)
 
 type person_input = { name : string }
@@ -140,5 +173,6 @@ let () =
         ("string_is_int", string_is_int);
         ("string_has_min_length", string_has_min_length);
         ("string_has_max_length", string_has_max_length);
+        ("string_is_email", string_is_email);
         ("validators", validators);
       ]

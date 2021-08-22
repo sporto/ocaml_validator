@@ -58,6 +58,22 @@ let string_has_max_length max :
     Common.custom (string_has_max_length_check max)
 
 
+let string_is_email_check value =
+    let regex = Str.regexp "^.+@.+$" in
+    let has_at = Str.string_match regex value 0 in
+    let splitted = String.split_on_char '@' value in
+    let has_only_one_at = List.length splitted = 2 in
+    if has_at && has_only_one_at then
+      Some value
+    else
+      None
+
+
+let string_is_email :
+    (string, string, string) validator_builder =
+    Common.custom string_is_email_check
+
+
 let validate
     (input : 'i)
     (validator : ('e, 'i, 'o) validator_builder)

@@ -1,4 +1,4 @@
 (library
  (name validator)
  (public_name validator)
- (libraries))
+ (libraries str))
