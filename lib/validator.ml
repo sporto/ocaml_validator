@@ -1,16 +1,26 @@
-type 'err errors = 'err Common.errors
+type 'err errors = 'err * 'err list
 
-type ('err, 'out) validator_result =
-  ('err, 'out) Common.validator_result
+type ('input, 'output) check = 'input -> 'output option
 
-type ('err, 'input, 'out) validator_builder =
-  ('err, 'input, 'out) Common.validator_builder
+type ('err, 'output) validator_result =
+  ('output, 'err errors) result
 
-type ('err, 'input, 'out) validator =
-  ('err, 'input, 'out) Common.validator
+type ('err, 'input, 'output) validator =
+  'input -> ('err, 'output) validator_result
 
-(* let validate field validator =
-   1 *)
+type ('err, 'input, 'output) validator_builder =
+  'err -> ('err, 'input, 'output) validator
+
+let custom
+    (check : ('i, 'o) check)
+    (error : 'e)
+    (input : 'i) =
+    match check input with
+    | Some output ->
+        Ok output
+    | None ->
+        Error (error, [ error ])
+
 
 let string_is_not_empty_check (value : string) :
     string option =
@@ -22,7 +32,7 @@ let string_is_not_empty_check (value : string) :
 
 let string_is_not_empty :
     (string, string, string) validator_builder =
-    Common.custom string_is_not_empty_check
+    custom string_is_not_empty_check
 
 
 let string_is_int_check value =
@@ -31,7 +41,7 @@ let string_is_int_check value =
 
 let string_is_int : (string, string, int) validator_builder
     =
-    Common.custom string_is_int_check
+    custom string_is_int_check
 
 
 let string_has_min_length_check min value =
@@ -43,7 +53,7 @@ let string_has_min_length_check min value =
 
 let string_has_min_length min :
     (string, string, string) validator_builder =
-    Common.custom (string_has_min_length_check min)
+    custom (string_has_min_length_check min)
 
 
 let string_has_max_length_check max value =
@@ -55,7 +65,7 @@ let string_has_max_length_check max value =
 
 let string_has_max_length max :
     (string, string, string) validator_builder =
-    Common.custom (string_has_max_length_check max)
+    custom (string_has_max_length_check max)
 
 
 let string_is_email_check value =
@@ -71,7 +81,7 @@ let string_is_email_check value =
 
 let string_is_email :
     (string, string, string) validator_builder =
-    Common.custom string_is_email_check
+    custom string_is_email_check
 
 
 let validate

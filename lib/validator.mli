@@ -5,11 +5,11 @@ type 'err errors = 'err * 'err list
 type ('err, 'out) validator_result =
   ('out, 'err errors) result
 
-type ('err, 'input, 'output) validator_builder =
-  'err -> 'input -> ('err, 'output) validator_result
-
 type ('err, 'input, 'output) validator =
   'input -> ('err, 'output) validator_result
+
+type ('err, 'input, 'output) validator_builder =
+  'err -> ('err, 'input, 'output) validator
 
 val string_is_not_empty :
   (string, string, string) validator_builder
