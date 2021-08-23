@@ -320,7 +320,7 @@ let person_validator (input : PersonInput.t) :
     let open PersonInput in
     Validator.build PersonValid.build
     |> Validator.validate input.name
-         Validator.string_is_not_empty "Empty"
+         (Validator.string_is_not_empty "Empty")
 
 
 module FormInput = struct
@@ -335,30 +335,37 @@ end
 module FormValid = struct
   type t = {
     name : string;
-        (* email : string;
-           age : int;
-           username : string option; *)
+    email : string;
+    age : int;
+    username : string option;
   }
 
-  let build name = { name }
+  let build name email age username =
+      { name; email; age; username }
 end
 
 let form_validator (input : FormInput.t) :
     (string, FormValid.t) Validator.validator_result =
     let open FormInput in
+    let validator_name =
+        Validator.string_is_not_empty "Empty"
+        |> Validator.compose
+             (Validator.string_has_min_length 4 "Too short")
+    in
+    let validator_email =
+        Validator.option_is_some "Missing email"
+        |> Validator.compose
+             (Validator.string_is_email "Not an email")
+    in
     Validator.build FormValid.build
-    |> Validator.validate input.name
-         (* TODO compose *)
-         Validator.string_is_not_empty "Empty"
+    |> Validator.validate input.name validator_name
+    |> Validator.validate input.email validator_email
+    |> Validator.validate input.age
+         (Validator.int_min 13 "Must be 13")
+    |> Validator.validate input.username
+         (Validator.optional
+            (Validator.string_is_not_empty "Empty"))
 
-
-(* |> Validator.validate input.email
-        (Validator.string_is_email "Not an email")
-   |> Validator.validate input.age
-        (Validator.int_min 13 "Must be 13 or older")
-   |> Validator.validate input.username
-        (Validator.optional
-           (Validator.string_is_not_empty "Empty")) *)
 
 let validators =
     [

@@ -76,7 +76,14 @@ val build :
 
 val validate :
   'input ->
-  ('err, 'input, 'output) validator_builder ->
-  'err ->
+  ('err, 'input, 'output) validator ->
   ('output -> 'next_acc, 'err errors) result ->
   ('next_acc, 'err errors) result
+
+(* Compose validators
+   Run the first validator and if successful then the second.
+   Only returns the first error. *)
+val compose :
+  (string, 'mid, 'o) validator ->
+  (string, 'i, 'mid) validator ->
+  (string, 'i, 'o) validator

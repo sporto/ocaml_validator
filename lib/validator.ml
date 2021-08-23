@@ -196,11 +196,10 @@ let keep
 
 let validate
     (input : 'i)
-    (validator : ('e, 'i, 'o) validator_builder)
-    (error : 'e)
+    (validator : ('e, 'i, 'o) validator)
     (accumulator : ('o -> 'next_acc, 'e errors) result) :
     ('next_acc, 'e errors) result =
-    match validator error input with
+    match validator input with
     | Ok valid_value ->
         accumulator
         |> Result.map (fun acc -> acc valid_value)
@@ -214,5 +213,17 @@ let validate
                 [ previous_errors; errors ] |> List.flatten
               ))
 
+
+let compose
+    (validator2 : (string, 'mid, 'o) validator)
+    (validator1 : (string, 'i, 'mid) validator) :
+    (string, 'i, 'o) validator =
+   fun (i : 'i) -> Result.bind (validator1 i) validator2
+
+
+(* TODO all *)
+(* https://github.com/sporto/gleam-validator/blob/main/src/validator.gleam#L215 *)
+(* TODO whole *)
+(* https://github.com/sporto/gleam-validator/blob/main/src/validator.gleam#L244 *)
 
 let build fn = Ok fn
