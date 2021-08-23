@@ -53,6 +53,32 @@ let list_is_not_empty :
    fun err list -> custom list_is_not_empty_check err list
 
 
+let list_has_min_length_check n list =
+    if List.length list < n then
+      None
+    else
+      Some list
+
+
+let list_has_min_length :
+    int -> (string, 'a list, 'a list) validator_builder =
+   fun len err list ->
+    custom (list_has_min_length_check len) err list
+
+
+let list_has_max_length_check n list =
+    if List.length list > n then
+      None
+    else
+      Some list
+
+
+let list_has_max_length :
+    int -> (string, 'a list, 'a list) validator_builder =
+   fun len err list ->
+    custom (list_has_max_length_check len) err list
+
+
 let string_is_not_empty_check (value : string) :
     string option =
     if value = "" then

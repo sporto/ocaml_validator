@@ -36,6 +36,48 @@ let int_min =
     ]
 
 
+let list_has_max_length_test len input expected () =
+    let actual =
+        Validator.list_has_max_length len "Fail" input
+    in
+    check
+      (validator_result_printer (list int))
+      "" actual expected
+
+
+let list_has_max_length =
+    [
+      ( "Returns the the list when not empty",
+        `Quick,
+        list_has_max_length_test 2 [ 1; 2 ] (Ok [ 1; 2 ]) );
+      ( "Returns error",
+        `Quick,
+        list_has_max_length_test 2 [ 1; 2; 3 ]
+          (Error ("Fail", [ "Fail" ])) );
+    ]
+
+
+let list_has_min_length_test len input expected () =
+    let actual =
+        Validator.list_has_min_length len "Fail" input
+    in
+    check
+      (validator_result_printer (list int))
+      "" actual expected
+
+
+let list_has_min_length =
+    [
+      ( "Returns the the list when not empty",
+        `Quick,
+        list_has_min_length_test 2 [ 1; 2 ] (Ok [ 1; 2 ]) );
+      ( "Returns error",
+        `Quick,
+        list_has_min_length_test 3 [ 1; 2 ]
+          (Error ("Fail", [ "Fail" ])) );
+    ]
+
+
 let list_is_not_empty_test input expected () =
     let actual = Validator.list_is_not_empty "Fail" input in
     check
@@ -48,6 +90,10 @@ let list_is_not_empty =
       ( "Returns the the list when not empty",
         `Quick,
         list_is_not_empty_test [ 1 ] (Ok [ 1 ]) );
+      ( "Returns error when empty",
+        `Quick,
+        list_is_not_empty_test []
+          (Error ("Fail", [ "Fail" ])) );
     ]
 
 
@@ -219,6 +265,8 @@ let () =
         ("int_max", int_max);
         ("int_min", int_min);
         ("list_is_not_empty", list_is_not_empty);
+        ("list_has_max_length", list_has_max_length);
+        ("list_has_min_length", list_has_min_length);
         ("string_has_max_length", string_has_max_length);
         ("string_has_min_length", string_has_min_length);
         ("string_is_email", string_is_email);

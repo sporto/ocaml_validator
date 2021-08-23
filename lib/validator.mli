@@ -21,6 +21,12 @@ val int_max : int -> (string, int, int) validator_builder
 val list_is_not_empty :
   (string, 'a list, 'a list) validator_builder
 
+val list_has_max_length :
+  int -> (string, 'a list, 'a list) validator_builder
+
+val list_has_min_length :
+  int -> (string, 'a list, 'a list) validator_builder
+
 val string_is_not_empty :
   (string, string, string) validator_builder
 (** Validate if a string is not empty *)
