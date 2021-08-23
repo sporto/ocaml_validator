@@ -97,6 +97,36 @@ let list_is_not_empty =
     ]
 
 
+let every_test validator input expected () =
+    let actual = Validator.every validator input in
+    check
+      (validator_result_printer (list int))
+      "" actual expected
+
+
+let every =
+    [
+      ( "Returns the list when all pass",
+        `Quick,
+        every_test
+          (Validator.int_max 5 "Fail")
+          [ 1; 2; 3 ]
+          (Ok [ 1; 2; 3 ]) );
+      ( "Returns an error when one fails",
+        `Quick,
+        every_test
+          (Validator.int_max 2 "Fail")
+          [ 1; 2; 3 ]
+          (Error ("Fail", [ "Fail" ])) );
+      ( "Returns multiple errors when many fail",
+        `Quick,
+        every_test
+          (Validator.int_max 1 "Fail")
+          [ 1; 2; 3 ]
+          (Error ("Fail", [ "Fail"; "Fail" ])) );
+    ]
+
+
 let string_is_not_empty_test input expected () =
     let actual =
         Validator.string_is_not_empty "Fail" input
@@ -267,6 +297,7 @@ let () =
         ("list_is_not_empty", list_is_not_empty);
         ("list_has_max_length", list_has_max_length);
         ("list_has_min_length", list_has_min_length);
+        ("every", every);
         ("string_has_max_length", string_has_max_length);
         ("string_has_min_length", string_has_min_length);
         ("string_is_email", string_is_email);

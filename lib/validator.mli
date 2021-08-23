@@ -47,6 +47,11 @@ val string_has_max_length :
 val string_is_email :
   (string, string, string) validator_builder
 
+(* Validate a list of items. Run the given validator for each item returning all the errors. *)
+val every :
+  (string, 'i, 'o) validator ->
+  (string, 'i list, 'o list) validator
+
 val build :
   ('a -> 'final) -> ('a -> 'final, 'e errors) result
 

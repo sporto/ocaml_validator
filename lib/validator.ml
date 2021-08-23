@@ -141,6 +141,30 @@ let string_is_email :
     custom string_is_email_check
 
 
+let every
+    (validator : (string, 'i, 'o) validator)
+    (items : 'i list) =
+    let results = List.map validator items in
+    let errors =
+        results
+        |> List.map (fun result ->
+               match result with
+               | Ok _ ->
+                   []
+               | Error (_first, rest) ->
+                   rest)
+        |> List.flatten
+    in
+    let ok_items =
+        List.filter_map Result.to_option results
+    in
+    match List.nth_opt errors 0 with
+    | None ->
+        Ok ok_items
+    | Some head ->
+        Error (head, errors)
+
+
 let validate
     (input : 'i)
     (validator : ('e, 'i, 'o) validator_builder)
