@@ -57,6 +57,14 @@ val string_has_max_length :
 val string_is_email :
   (string, string, string) validator_builder
 
+(* Validate an optional value.
+   Run the validator only if the value is Some.
+   If the value is None then just return None back. *)
+val optional :
+  (string, 'i, 'o) validator ->
+  'i option ->
+  ('i option, string errors) result
+
 val build :
   ('a -> 'final) -> ('a -> 'final, 'e errors) result
 

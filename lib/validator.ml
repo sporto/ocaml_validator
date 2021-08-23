@@ -108,6 +108,20 @@ let option_is_some :
    fun err opt -> custom Fun.id err opt
 
 
+let optional
+    (validator : (string, 'i, 'o) validator)
+    (option : 'i option) =
+    match option with
+    | None ->
+        Ok option
+    | Some value -> (
+        match validator value with
+        | Ok _ ->
+            Ok option
+        | Error err ->
+            Error err)
+
+
 let string_is_not_empty_check (value : string) :
     string option =
     if value = "" then

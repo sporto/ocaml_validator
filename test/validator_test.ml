@@ -6,7 +6,7 @@ let validator_result_printer out =
 
 let int_max_test max input expected () =
     let actual = Validator.int_max max "Fail" input in
-    check (validator_result_printer int) "" actual expected
+    check (validator_result_printer int) "" expected actual
 
 
 let int_max =
@@ -22,7 +22,7 @@ let int_max =
 
 let int_min_test min input expected () =
     let actual = Validator.int_min min "Fail" input in
-    check (validator_result_printer int) "" actual expected
+    check (validator_result_printer int) "" expected actual
 
 
 let int_min =
@@ -42,7 +42,7 @@ let list_has_max_length_test len input expected () =
     in
     check
       (validator_result_printer (list int))
-      "" actual expected
+      "" expected actual
 
 
 let list_has_max_length =
@@ -63,7 +63,7 @@ let list_has_min_length_test len input expected () =
     in
     check
       (validator_result_printer (list int))
-      "" actual expected
+      "" expected actual
 
 
 let list_has_min_length =
@@ -82,7 +82,7 @@ let list_is_not_empty_test input expected () =
     let actual = Validator.list_is_not_empty "Fail" input in
     check
       (validator_result_printer (list int))
-      "" actual expected
+      "" expected actual
 
 
 let list_is_not_empty =
@@ -101,7 +101,7 @@ let list_every_test validator input expected () =
     let actual = Validator.list_every validator input in
     check
       (validator_result_printer (list int))
-      "" actual expected
+      "" expected actual
 
 
 let list_every =
@@ -131,7 +131,7 @@ let option_is_some_test input expected () =
     let actual = Validator.option_is_some "Fail" input in
     check
       (validator_result_printer string)
-      "" actual expected
+      "" expected actual
 
 
 let option_is_some =
@@ -152,7 +152,7 @@ let string_is_not_empty_test input expected () =
     in
     check
       (validator_result_printer string)
-      "" actual expected
+      "" expected actual
 
 
 let string_is_not_empty =
@@ -169,7 +169,7 @@ let string_is_not_empty =
 
 let string_is_int_test input expected () =
     let actual = Validator.string_is_int "Fail" input in
-    check (validator_result_printer int) "" actual expected
+    check (validator_result_printer int) "" expected actual
 
 
 let string_is_int =
@@ -190,7 +190,7 @@ let string_has_min_length_test input len expected () =
     in
     check
       (validator_result_printer string)
-      "" actual expected
+      "" expected actual
 
 
 let string_has_min_length =
@@ -211,7 +211,7 @@ let string_has_max_length_test input len expected () =
     in
     check
       (validator_result_printer string)
-      "" actual expected
+      "" expected actual
 
 
 let string_has_max_length =
@@ -230,7 +230,7 @@ let string_is_email_test input expected () =
     let actual = Validator.string_is_email "Fail" input in
     check
       (validator_result_printer string)
-      "" actual expected
+      "" expected actual
 
 
 let string_is_email =
@@ -256,6 +256,32 @@ let string_is_email =
       ( "Not email",
         `Quick,
         string_is_email_test "Hello" error );
+    ]
+
+
+let optional_test validator input expected () =
+    let actual = Validator.optional validator input in
+    check
+      (validator_result_printer (option string))
+      "" expected actual
+
+
+let optional =
+    let validator =
+        Validator.string_is_email "Not an email"
+    in
+    [
+      ( "Is doesn't run the validator when None",
+        `Quick,
+        optional_test validator None (Ok None) );
+      ( "Is runs the validator when Some",
+        `Quick,
+        optional_test validator (Some "sam@sample.com")
+          (Ok (Some "sam@sample.com")) );
+      ( "Is can fail the validator when Some",
+        `Quick,
+        optional_test validator (Some "sample.com")
+          (Error ("Not an email", [ "Not an email" ])) );
     ]
 
 
@@ -285,7 +311,7 @@ let validator_test
     let actual = validator input in
     check
       (validator_result_printer person_printer)
-      "" actual expected
+      "" expected actual
 
 
 let person_validator (input : person_input) :
@@ -323,5 +349,6 @@ let () =
         ("string_is_email", string_is_email);
         ("string_is_int", string_is_int);
         ("string_is_not_empty", string_is_not_empty);
+        ("optional", optional);
         ("validators", validators);
       ]
