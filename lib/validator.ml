@@ -79,6 +79,35 @@ let list_has_max_length :
     custom (list_has_max_length_check len) err list
 
 
+let list_every
+    (validator : (string, 'i, 'o) validator)
+    (items : 'i list) =
+    let results = List.map validator items in
+    let errors =
+        results
+        |> List.map (fun result ->
+               match result with
+               | Ok _ ->
+                   []
+               | Error (_first, rest) ->
+                   rest)
+        |> List.flatten
+    in
+    let ok_items =
+        List.filter_map Result.to_option results
+    in
+    match List.nth_opt errors 0 with
+    | None ->
+        Ok ok_items
+    | Some head ->
+        Error (head, errors)
+
+
+let option_is_some :
+    (string, 'a option, 'a) validator_builder =
+   fun err opt -> custom Fun.id err opt
+
+
 let string_is_not_empty_check (value : string) :
     string option =
     if value = "" then
@@ -139,30 +168,6 @@ let string_is_email_check value =
 let string_is_email :
     (string, string, string) validator_builder =
     custom string_is_email_check
-
-
-let list_every
-    (validator : (string, 'i, 'o) validator)
-    (items : 'i list) =
-    let results = List.map validator items in
-    let errors =
-        results
-        |> List.map (fun result ->
-               match result with
-               | Ok _ ->
-                   []
-               | Error (_first, rest) ->
-                   rest)
-        |> List.flatten
-    in
-    let ok_items =
-        List.filter_map Result.to_option results
-    in
-    match List.nth_opt errors 0 with
-    | None ->
-        Ok ok_items
-    | Some head ->
-        Error (head, errors)
 
 
 let validate

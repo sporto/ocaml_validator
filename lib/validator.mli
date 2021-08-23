@@ -27,6 +27,16 @@ val list_has_max_length :
 val list_has_min_length :
   int -> (string, 'a list, 'a list) validator_builder
 
+(* Validate a list of items. Run the given validator for each item returning all the errors. *)
+val list_every :
+  (string, 'i, 'o) validator ->
+  (string, 'i list, 'o list) validator
+
+(* Validate that a value is not None.
+   Returns the value if Some. *)
+val option_is_some :
+  (string, 'a option, 'a) validator_builder
+
 val string_is_not_empty :
   (string, string, string) validator_builder
 (** Validate if a string is not empty *)
@@ -46,11 +56,6 @@ val string_has_max_length :
    This checks if a string follows a simple pattern `_@_`. *)
 val string_is_email :
   (string, string, string) validator_builder
-
-(* Validate a list of items. Run the given validator for each item returning all the errors. *)
-val list_every :
-  (string, 'i, 'o) validator ->
-  (string, 'i list, 'o list) validator
 
 val build :
   ('a -> 'final) -> ('a -> 'final, 'e errors) result

@@ -127,6 +127,25 @@ let list_every =
     ]
 
 
+let option_is_some_test input expected () =
+    let actual = Validator.option_is_some "Fail" input in
+    check
+      (validator_result_printer string)
+      "" actual expected
+
+
+let option_is_some =
+    [
+      ( "Returns the value when Some",
+        `Quick,
+        option_is_some_test (Some "Hello") (Ok "Hello") );
+      ( "Returns the error when None",
+        `Quick,
+        option_is_some_test None
+          (Error ("Fail", [ "Fail" ])) );
+    ]
+
+
 let string_is_not_empty_test input expected () =
     let actual =
         Validator.string_is_not_empty "Fail" input
@@ -298,6 +317,7 @@ let () =
         ("list_has_max_length", list_has_max_length);
         ("list_has_min_length", list_has_min_length);
         ("list_every", list_every);
+        ("option_is_some", option_is_some);
         ("string_has_max_length", string_has_max_length);
         ("string_has_min_length", string_has_min_length);
         ("string_is_email", string_is_email);
