@@ -40,6 +40,19 @@ let int_max_check (max : int) (value : int) =
 
 let int_max max = custom (int_max_check max)
 
+let list_is_not_empty_check (list : 'a list) :
+    'a list option =
+    if List.length list = 0 then
+      None
+    else
+      Some list
+
+
+let list_is_not_empty :
+    (string, 'a list, 'a list) validator_builder =
+   fun err list -> custom list_is_not_empty_check err list
+
+
 let string_is_not_empty_check (value : string) :
     string option =
     if value = "" then
@@ -123,4 +136,4 @@ let validate
               ))
 
 
-let build1 fn = Ok fn
+let build fn = Ok fn

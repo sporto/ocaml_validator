@@ -17,6 +17,10 @@ val int_min : int -> (string, int, int) validator_builder
 val int_max : int -> (string, int, int) validator_builder
 (** Validate max permitted integeger *)
 
+(* Validate that a list is not empty *)
+val list_is_not_empty :
+  (string, 'a list, 'a list) validator_builder
+
 val string_is_not_empty :
   (string, string, string) validator_builder
 (** Validate if a string is not empty *)
@@ -37,7 +41,7 @@ val string_has_max_length :
 val string_is_email :
   (string, string, string) validator_builder
 
-val build1 :
+val build :
   ('a -> 'final) -> ('a -> 'final, 'e errors) result
 
 val validate :

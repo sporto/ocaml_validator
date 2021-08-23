@@ -36,6 +36,21 @@ let int_min =
     ]
 
 
+let list_is_not_empty_test input expected () =
+    let actual = Validator.list_is_not_empty "Fail" input in
+    check
+      (validator_result_printer (list int))
+      "" actual expected
+
+
+let list_is_not_empty =
+    [
+      ( "Returns the the list when not empty",
+        `Quick,
+        list_is_not_empty_test [ 1 ] (Ok [ 1 ]) );
+    ]
+
+
 let string_is_not_empty_test input expected () =
     let actual =
         Validator.string_is_not_empty "Fail" input
@@ -180,7 +195,7 @@ let validator_test
 
 let person_validator (input : person_input) :
     (string, person_valid) Validator.validator_result =
-    Validator.build1 build_person_valid
+    Validator.build build_person_valid
     |> Validator.validate input.name
          Validator.string_is_not_empty "Empty"
 
@@ -203,6 +218,7 @@ let () =
       [
         ("int_max", int_max);
         ("int_min", int_min);
+        ("list_is_not_empty", list_is_not_empty);
         ("string_has_max_length", string_has_max_length);
         ("string_has_min_length", string_has_min_length);
         ("string_is_email", string_is_email);
