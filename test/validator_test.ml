@@ -287,49 +287,90 @@ let optional =
 
 (* Complete validators *)
 
-type person_input = { name : string }
-
-type person_valid = { name : string }
-
-let person_pp ppf (person : person_valid) =
-    Fmt.pf ppf "%s" person.name
-
-
-let person_equal (a : person_valid) (b : person_valid) =
-    a.name = b.name
-
-
-let person_printer = testable person_pp person_equal
-
-let build_person_valid name : person_valid = { name }
-
 let validator_test
+    printer
     (validator : ('e, 'i, 'o) Validator.validator)
     (input : 'i)
     (expected : ('e, 'o) Validator.validator_result)
     () =
     let actual = validator input in
     check
-      (validator_result_printer person_printer)
+      (validator_result_printer printer)
       "" expected actual
 
 
-let person_validator (input : person_input) :
-    (string, person_valid) Validator.validator_result =
-    Validator.build build_person_valid
+module PersonInput = struct
+  type t = { name : string }
+end
+
+module PersonValid = struct
+  type t = { name : string }
+
+  let pp ppf (person : t) = Fmt.pf ppf "%s" person.name
+
+  let equal (a : t) (b : t) = a.name = b.name
+
+  let printer = testable pp equal
+
+  let build name : t = { name }
+end
+
+let person_validator (input : PersonInput.t) :
+    (string, PersonValid.t) Validator.validator_result =
+    let open PersonInput in
+    Validator.build PersonValid.build
     |> Validator.validate input.name
          Validator.string_is_not_empty "Empty"
 
+
+module FormInput = struct
+  type t = {
+    name : string;
+    email : string option;
+    age : int;
+    username : string option;
+  }
+end
+
+module FormValid = struct
+  type t = {
+    name : string;
+        (* email : string;
+           age : int;
+           username : string option; *)
+  }
+
+  let build name = { name }
+end
+
+let form_validator (input : FormInput.t) :
+    (string, FormValid.t) Validator.validator_result =
+    let open FormInput in
+    Validator.build FormValid.build
+    |> Validator.validate input.name
+         (* TODO compose *)
+         Validator.string_is_not_empty "Empty"
+
+
+(* |> Validator.validate input.email
+        (Validator.string_is_email "Not an email")
+   |> Validator.validate input.age
+        (Validator.int_min 13 "Must be 13 or older")
+   |> Validator.validate input.username
+        (Validator.optional
+           (Validator.string_is_not_empty "Empty")) *)
 
 let validators =
     [
       ( "Validates a person",
         `Quick,
-        validator_test person_validator { name = "Sam" }
-          (Ok { name = "Sam" }) );
+        validator_test PersonValid.printer person_validator
+          { PersonInput.name = "Sam" }
+          (Ok { PersonValid.name = "Sam" }) );
       ( "Returns errors for person",
         `Quick,
-        validator_test person_validator { name = "" }
+        validator_test PersonValid.printer person_validator
+          { PersonInput.name = "" }
           (Error ("Empty", [ "Empty" ])) );
     ]
 

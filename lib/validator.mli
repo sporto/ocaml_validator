@@ -65,6 +65,12 @@ val optional :
   'i option ->
   ('i option, string errors) result
 
+(* Keep a value as is. *)
+val keep :
+  ('a -> 'next_acc, 'e errors) result ->
+  'a ->
+  ('next_acc, 'e errors) result
+
 val build :
   ('a -> 'final) -> ('a -> 'final, 'e errors) result
 

@@ -184,6 +184,16 @@ let string_is_email :
     custom string_is_email_check
 
 
+let keep
+    (acc : ('a -> 'next_acc', 'e errors) result)
+    (value : 'a) =
+    match acc with
+    | Error err ->
+        Error err
+    | Ok acc ->
+        Ok (acc value)
+
+
 let validate
     (input : 'i)
     (validator : ('e, 'i, 'o) validator_builder)
