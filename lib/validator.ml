@@ -141,7 +141,7 @@ let string_is_email :
     custom string_is_email_check
 
 
-let every
+let list_every
     (validator : (string, 'i, 'o) validator)
     (items : 'i list) =
     let results = List.map validator items in

@@ -48,7 +48,7 @@ val string_is_email :
   (string, string, string) validator_builder
 
 (* Validate a list of items. Run the given validator for each item returning all the errors. *)
-val every :
+val list_every :
   (string, 'i, 'o) validator ->
   (string, 'i list, 'o list) validator
 
