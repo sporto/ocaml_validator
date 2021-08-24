@@ -184,8 +184,8 @@ let string_is_email :
 
 
 let keep
-    (acc : ('a -> 'next_acc', 'e errors) result)
-    (value : 'a) =
+    (value : 'a)
+    (acc : ('a -> 'next_acc', 'e errors) result) =
     match acc with
     | Error err ->
         Error err

@@ -66,8 +66,8 @@ val optional :
 
 (* Keep a value as is. *)
 val keep :
-  ('a -> 'next_acc, 'e errors) result ->
   'a ->
+  ('a -> 'next_acc, 'e errors) result ->
   ('next_acc, 'e errors) result
 
 val build :

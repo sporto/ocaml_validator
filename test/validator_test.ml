@@ -1,19 +1,51 @@
 open Alcotest
 
 module PersonInput = struct
-  type t = { name : string }
+  type t = {
+    name : string;
+    age : int;
+  }
 end
 
 module PersonValid = struct
-  type t = { name : string }
+  type t = {
+    name : string;
+    age : int;
+  }
+  [@@deriving show, eq]
 
-  let pp ppf (person : t) = Fmt.pf ppf "%s" person.name
+  let build name age = { name; age }
 
-  let equal (a : t) (b : t) = a.name = b.name
+  let printer =
+      testable (fun ppf t -> Fmt.pf ppf "%s" (show t)) equal
+end
 
-  let printer = testable pp equal
+module FormInput = struct
+  type t = {
+    name : string;
+    email : string option;
+    age : int;
+    username : string option;
+    hobbies : string list;
+  }
+end
 
-  let build name : t = { name }
+module FormValid = struct
+  type t = {
+    name : string;
+    email : string;
+    age : int;
+    username : string option;
+    hobbies : string list;
+  }
+  [@@deriving show, eq]
+
+  let build name email age username hobbies =
+      { name; email; age; username; hobbies }
+
+
+  let printer =
+      testable (fun ppf t -> Fmt.pf ppf "%s" (show t)) equal
 end
 
 let validator_result_printer out =
@@ -352,12 +384,12 @@ let whole =
       ( "It validates",
         `Quick,
         whole_test validator
-          (Ok { PersonValid.name = "Sam" })
-          (Ok { PersonValid.name = "Sam" }) );
+          (Ok { PersonValid.name = "Sam"; age = 20 })
+          (Ok { PersonValid.name = "Sam"; age = 20 }) );
       ( "It can fail",
         `Quick,
         whole_test validator
-          (Ok { PersonValid.name = "Alice" })
+          (Ok { PersonValid.name = "Alice"; age = 20 })
           (Error ("Not Sam", [ "Not Sam" ])) );
     ]
 
@@ -382,35 +414,8 @@ let person_validator (input : PersonInput.t) :
     Validator.build PersonValid.build
     |> Validator.validate input.name
          (Validator.string_is_not_empty "Empty")
+    |> Validator.keep input.age
 
-
-module FormInput = struct
-  type t = {
-    name : string;
-    email : string option;
-    age : int;
-    username : string option;
-    hobbies : string list;
-  }
-end
-
-module FormValid = struct
-  type t = {
-    name : string;
-    email : string;
-    age : int;
-    username : string option;
-    hobbies : string list;
-  }
-  [@@deriving show, eq]
-
-  let build name email age username hobbies =
-      { name; email; age; username; hobbies }
-
-
-  let printer =
-      testable (fun ppf t -> Fmt.pf ppf "%s" (show t)) equal
-end
 
 let form_validator (input : FormInput.t) :
     (FormValid.t, string) Validator.validator_result =
@@ -441,12 +446,16 @@ let validators =
       ( "Validates a person",
         `Quick,
         validator_test PersonValid.printer person_validator
-          { PersonInput.name = "Sam" }
-          (Ok { PersonValid.name = "Sam" }) );
+          { PersonInput.name = "Sam"; PersonInput.age = 20 }
+          (Ok
+             {
+               PersonValid.name = "Sam";
+               PersonValid.age = 20;
+             }) );
       ( "Returns errors for person",
         `Quick,
         validator_test PersonValid.printer person_validator
-          { PersonInput.name = "" }
+          { PersonInput.name = ""; PersonInput.age = 20 }
           (Error ("Empty", [ "Empty" ])) );
       ( "Validates a form",
         `Quick,
