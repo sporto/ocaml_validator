@@ -12,3 +12,7 @@ build:
 
 test: ## Run the unit tests
 	opam exec -- dune runtest --root .
+
+# Generate odoc documentation
+doc:
+	opam exec -- dune build --root . @doc

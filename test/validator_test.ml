@@ -429,6 +429,7 @@ let form_validator (input : FormInput.t) :
         string_is_not_empty "Empty"
         |> compose
              (string_has_min_length 3 "Name is too short")
+        |> compose (string_has_max_length 100 "Too long")
     in
     let validator_email =
         option_is_some "Missing email"
@@ -443,6 +444,7 @@ let form_validator (input : FormInput.t) :
             (string_is_not_empty "Username is empty"))
     |> validate input.hobbies
          (list_every (string_is_not_empty "Invalid hobby"))
+    |> whole (fun f -> Ok f)
 
 
 let validators =

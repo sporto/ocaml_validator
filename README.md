@@ -7,13 +7,13 @@ Create a record validator via composable sub-validators
 ### Using Opam
 
 ```bash
-opam install inquire
+opam install validator
 ```
 
 ### Using Esy
 
 ```bash
-esy add @opam/inquire
+esy add @opam/validator
 ```
 
 ## Usage
