@@ -49,7 +49,7 @@ let list_is_not_empty_check (list : 'a list) :
 
 
 let list_is_not_empty :
-    ('a list, 'a list, string) validator_builder =
+    ('a list, 'a list, 'err) validator_builder =
    fun err list -> custom list_is_not_empty_check err list
 
 
@@ -61,7 +61,7 @@ let list_has_min_length_check n list =
 
 
 let list_has_min_length :
-    int -> ('a list, 'a list, string) validator_builder =
+    int -> ('a list, 'a list, 'err) validator_builder =
    fun len err list ->
     custom (list_has_min_length_check len) err list
 
@@ -74,13 +74,13 @@ let list_has_max_length_check n list =
 
 
 let list_has_max_length :
-    int -> ('a list, 'a list, string) validator_builder =
+    int -> ('a list, 'a list, 'err) validator_builder =
    fun len err list ->
     custom (list_has_max_length_check len) err list
 
 
 let list_every
-    (validator : ('i, 'o, string) validator)
+    (validator : ('i, 'o, 'err) validator)
     (items : 'i list) =
     let results = List.map validator items in
     let errors =
@@ -103,13 +103,13 @@ let list_every
         Error (head, errors)
 
 
-let option_is_some :
-    ('a option, 'a, string) validator_builder =
+let option_is_some : ('a option, 'a, 'err) validator_builder
+    =
    fun err opt -> custom Fun.id err opt
 
 
 let optional
-    (validator : ('i, 'o, string) validator)
+    (validator : ('i, 'o, 'err) validator)
     (option : 'i option) =
     match option with
     | None ->
@@ -131,17 +131,16 @@ let string_is_not_empty_check (value : string) :
 
 
 let string_is_not_empty :
-    (string, string, string) validator_builder =
-    custom string_is_not_empty_check
+    (string, string, 'err) validator_builder =
+   fun err -> custom string_is_not_empty_check err
 
 
 let string_is_int_check value =
     try Some (int_of_string value) with _ -> None
 
 
-let string_is_int : (string, int, string) validator_builder
-    =
-    custom string_is_int_check
+let string_is_int : (string, int, 'err) validator_builder =
+   fun err -> custom string_is_int_check err
 
 
 let string_has_min_length_check min value =
@@ -152,7 +151,7 @@ let string_has_min_length_check min value =
 
 
 let string_has_min_length min :
-    (string, string, string) validator_builder =
+    (string, string, 'err) validator_builder =
     custom (string_has_min_length_check min)
 
 
@@ -164,7 +163,7 @@ let string_has_max_length_check max value =
 
 
 let string_has_max_length max :
-    (string, string, string) validator_builder =
+    (string, string, 'err) validator_builder =
     custom (string_has_max_length_check max)
 
 
@@ -180,8 +179,8 @@ let string_is_email_check value =
 
 
 let string_is_email :
-    (string, string, string) validator_builder =
-    custom string_is_email_check
+    (string, string, 'err) validator_builder =
+   fun err -> custom string_is_email_check err
 
 
 let keep
@@ -215,14 +214,14 @@ let validate
 
 
 let compose
-    (validator2 : ('mid, 'o, string) validator)
-    (validator1 : ('i, 'mid, string) validator) :
-    ('i, 'o, string) validator =
+    (validator2 : ('mid, 'o, 'err) validator)
+    (validator1 : ('i, 'mid, 'err) validator) :
+    ('i, 'o, 'err) validator =
    fun (i : 'i) -> Result.bind (validator1 i) validator2
 
 
 let all
-    (validators : ('io, 'io, string) validator list)
+    (validators : ('io, 'io, 'err) validator list)
     (input : 'io) =
     let results =
         List.map
