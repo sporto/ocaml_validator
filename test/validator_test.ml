@@ -329,6 +329,7 @@ module FormInput = struct
     email : string option;
     age : int;
     username : string option;
+    hobbies : string list;
   }
 end
 
@@ -338,11 +339,12 @@ module FormValid = struct
     email : string;
     age : int;
     username : string option;
+    hobbies : string list;
   }
   [@@deriving show, eq]
 
-  let build name email age username =
-      { name; email; age; username }
+  let build name email age username hobbies =
+      { name; email; age; username; hobbies }
 
 
   let printer =
@@ -369,6 +371,8 @@ let form_validator (input : FormInput.t) :
     |> validate input.username
          (optional
             (string_is_not_empty "Username is empty"))
+    |> validate input.hobbies
+         (list_every (string_is_not_empty "Invalid hobby"))
 
 
 let validators =
@@ -391,6 +395,7 @@ let validators =
             FormInput.email = Some "sam@sample.com";
             FormInput.age = 14;
             FormInput.username = None;
+            FormInput.hobbies = [ "art" ];
           }
           (Ok
              {
@@ -398,6 +403,7 @@ let validators =
                FormValid.email = "sam@sample.com";
                FormValid.age = 14;
                FormValid.username = None;
+               FormValid.hobbies = [ "art" ];
              }) );
       ( "Fails when name is too short",
         `Quick,
@@ -407,6 +413,7 @@ let validators =
             FormInput.email = Some "sam@sample.com";
             FormInput.age = 14;
             FormInput.username = None;
+            FormInput.hobbies = [ "art" ];
           }
           (Error
              ("Name is too short", [ "Name is too short" ]))
@@ -419,6 +426,7 @@ let validators =
             FormInput.email = None;
             FormInput.age = 14;
             FormInput.username = None;
+            FormInput.hobbies = [ "art" ];
           }
           (Error ("Missing email", [ "Missing email" ])) );
       ( "Fails when not an email",
@@ -429,6 +437,7 @@ let validators =
             FormInput.email = Some "@sample.com";
             FormInput.age = 14;
             FormInput.username = None;
+            FormInput.hobbies = [ "art" ];
           }
           (Error ("Not an email", [ "Not an email" ])) );
       ( "Runs the optional validator",
@@ -439,6 +448,7 @@ let validators =
             FormInput.email = Some "sam@sample.com";
             FormInput.age = 14;
             FormInput.username = Some "";
+            FormInput.hobbies = [ "art" ];
           }
           (Error
              ("Username is empty", [ "Username is empty" ]))
@@ -451,6 +461,7 @@ let validators =
             FormInput.email = Some "@sample.com";
             FormInput.age = 1;
             FormInput.username = Some "";
+            FormInput.hobbies = [ "art"; "" ];
           }
           (Error
              ( "Name is too short",
@@ -459,6 +470,7 @@ let validators =
                  "Not an email";
                  "Must be 13";
                  "Username is empty";
+                 "Invalid hobby";
                ] )) );
     ]
 
