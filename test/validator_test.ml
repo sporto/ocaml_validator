@@ -1,5 +1,21 @@
 open Alcotest
 
+module PersonInput = struct
+  type t = { name : string }
+end
+
+module PersonValid = struct
+  type t = { name : string }
+
+  let pp ppf (person : t) = Fmt.pf ppf "%s" person.name
+
+  let equal (a : t) (b : t) = a.name = b.name
+
+  let printer = testable pp equal
+
+  let build name : t = { name }
+end
+
 let validator_result_printer out =
     result out (pair string (list string))
 
@@ -317,6 +333,35 @@ let all =
     ]
 
 
+let whole_test validator input expected () =
+    let actual = input |> Validator.whole validator in
+    check
+      (validator_result_printer PersonValid.printer)
+      "" expected actual
+
+
+let whole =
+    let validator (person : PersonValid.t) =
+        let open PersonValid in
+        if person.name == "Sam" then
+          Ok person
+        else
+          Error "Not Sam"
+    in
+    [
+      ( "It validates",
+        `Quick,
+        whole_test validator
+          (Ok { PersonValid.name = "Sam" })
+          (Ok { PersonValid.name = "Sam" }) );
+      ( "It can fail",
+        `Quick,
+        whole_test validator
+          (Ok { PersonValid.name = "Alice" })
+          (Error ("Not Sam", [ "Not Sam" ])) );
+    ]
+
+
 (* Complete validators *)
 
 let validator_test
@@ -330,22 +375,6 @@ let validator_test
       (validator_result_printer printer)
       "" expected actual
 
-
-module PersonInput = struct
-  type t = { name : string }
-end
-
-module PersonValid = struct
-  type t = { name : string }
-
-  let pp ppf (person : t) = Fmt.pf ppf "%s" person.name
-
-  let equal (a : t) (b : t) = a.name = b.name
-
-  let printer = testable pp equal
-
-  let build name : t = { name }
-end
 
 let person_validator (input : PersonInput.t) :
     (string, PersonValid.t) Validator.validator_result =
@@ -526,5 +555,6 @@ let () =
         ("string_is_not_empty", string_is_not_empty);
         ("optional", optional);
         ("all", all);
+        ("whole", whole);
         ("validators", validators);
       ]

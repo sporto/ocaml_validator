@@ -246,9 +246,13 @@ let all
         Error (head, errors)
 
 
-(* TODO all *)
-(* https://github.com/sporto/gleam-validator/blob/main/src/validator.gleam#L215 *)
-(* TODO whole *)
-(* https://github.com/sporto/gleam-validator/blob/main/src/validator.gleam#L244 *)
+let whole
+    (validator : 'whole -> ('whole, 'err) result)
+    (validation_result : ('err, 'whole) validator_result) =
+    Result.bind validation_result (fun validated ->
+        validator validated
+        |> Result.map_error (fun error ->
+               (error, [ error ])))
+
 
 let build fn = Ok fn

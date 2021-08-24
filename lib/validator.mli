@@ -88,6 +88,22 @@ val compose :
   (string, 'i, 'mid) validator ->
   (string, 'i, 'o) validator
 
+(* Validate a value using a list of validators.
+   This runs all the validators in the list.
+
+   The initial input is passed to all validators.
+   All these validators must have the same input and output types.
+
+   Returns Ok when all validators pass.
+   Returns Error when any validator fails. Error will have all failures. *)
 val all :
   (string, 'io, 'io) validator list ->
   (string, 'io, 'io) validator
+
+(* Validate a structure as a whole.
+
+   Sometimes we need to validate a property in relation to another. *)
+val whole :
+  ('whole -> ('whole, 'err) result) ->
+  ('err, 'whole) validator_result ->
+  ('whole, 'err errors) result
