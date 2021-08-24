@@ -52,7 +52,8 @@ watch: ## Watch for the filesystem and rebuild on every change
 utop: ## Run a REPL and link with the project's libraries
 	opam exec -- dune utop --root . lib -- -implicit-bindings
 
-release: all ## Run the release script 
+# Run the release script
+release: all
 	opam exec -- dune-release tag
 	opam exec -- dune-release distrib
 	opam exec -- dune-release publish distrib -y
