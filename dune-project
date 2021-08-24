@@ -2,17 +2,18 @@
 
 (name validator)
 
-
-
-
-
 (license ISC)
 
-(authors
-  "Sebastian Porto")
+(authors "Sebastian Porto")
 
-(maintainers
-  "Sebastian Porto")
+(maintainers "Sebastian Porto")
+
+(homepage "https://github.com/sporto/ocaml_validator")
+
+(source
+ (github "sporto/ocaml_validator"))
+
+(bug_reports "https://github.com/sporto/ocaml_validator")
 
 (generate_opam_files true)
 
@@ -21,7 +22,8 @@
  (synopsis "Create a record validator via composable sub-validators")
  (description "Create a record validator via composable sub-validators")
  (depends
-  (ocaml (>= 4.08.0))
+  (ocaml
+   (>= 4.08.0))
   dune
   (alcotest :with-test)
   (odoc :with-doc)))

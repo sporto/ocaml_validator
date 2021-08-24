@@ -4,10 +4,9 @@ synopsis: "Create a record validator via composable sub-validators"
 description: "Create a record validator via composable sub-validators"
 maintainer: ["Sebastian Porto"]
 authors: ["Sebastian Porto"]
-homepage: "https://github.com/sporto/ocaml_validator"
-dev-repo: "https://github.com/sporto/ocaml_validator"
-bug-reports: "https://github.com/sporto/ocaml_validator"
 license: "ISC"
+homepage: "https://github.com/sporto/ocaml_validator"
+bug-reports: "https://github.com/sporto/ocaml_validator"
 depends: [
   "ocaml" {>= "4.08.0"}
   "dune"
@@ -28,3 +27,4 @@ build: [
     "@doc" {with-doc}
   ]
 ]
+dev-repo: "git+https://github.com/sporto/ocaml_validator.git"
