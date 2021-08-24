@@ -368,7 +368,7 @@ let validator_test
     printer
     (validator : ('e, 'i, 'o) Validator.validator)
     (input : 'i)
-    (expected : ('e, 'o) Validator.validator_result)
+    (expected : ('o, 'e) Validator.validator_result)
     () =
     let actual = validator input in
     check
@@ -377,7 +377,7 @@ let validator_test
 
 
 let person_validator (input : PersonInput.t) :
-    (string, PersonValid.t) Validator.validator_result =
+    (PersonValid.t, string) Validator.validator_result =
     let open PersonInput in
     Validator.build PersonValid.build
     |> Validator.validate input.name
@@ -413,7 +413,7 @@ module FormValid = struct
 end
 
 let form_validator (input : FormInput.t) :
-    (string, FormValid.t) Validator.validator_result =
+    (FormValid.t, string) Validator.validator_result =
     let open FormInput in
     let open Validator in
     let validator_name =

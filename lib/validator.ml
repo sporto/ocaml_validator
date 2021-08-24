@@ -2,11 +2,11 @@ type 'err errors = 'err * 'err list
 
 type ('input, 'output) check = 'input -> 'output option
 
-type ('err, 'output) validator_result =
+type ('output, 'err) validator_result =
   ('output, 'err errors) result
 
 type ('err, 'input, 'output) validator =
-  'input -> ('err, 'output) validator_result
+  'input -> ('output, 'err) validator_result
 
 type ('err, 'input, 'output) validator_builder =
   'err -> ('err, 'input, 'output) validator
@@ -248,7 +248,7 @@ let all
 
 let whole
     (validator : 'whole -> ('whole, 'err) result)
-    (validation_result : ('err, 'whole) validator_result) =
+    (validation_result : ('whole, 'err) validator_result) =
     Result.bind validation_result (fun validated ->
         validator validated
         |> Result.map_error (fun error ->

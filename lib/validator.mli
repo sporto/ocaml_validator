@@ -2,11 +2,11 @@
 
 type 'err errors = 'err * 'err list
 
-type ('err, 'out) validator_result =
+type ('out, 'err) validator_result =
   ('out, 'err errors) result
 
 type ('err, 'input, 'output) validator =
-  'input -> ('err, 'output) validator_result
+  'input -> ('output, 'err) validator_result
 
 type ('err, 'input, 'output) validator_builder =
   'err -> ('err, 'input, 'output) validator
@@ -105,5 +105,5 @@ val all :
    Sometimes we need to validate a property in relation to another. *)
 val whole :
   ('whole -> ('whole, 'err) result) ->
-  ('err, 'whole) validator_result ->
+  ('whole, 'err) validator_result ->
   ('whole, 'err errors) result
