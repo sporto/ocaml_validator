@@ -48,8 +48,12 @@ module FormValid = struct
       testable (fun ppf t -> Fmt.pf ppf "%s" (show t)) equal
 end
 
+let validator_result_printer_with_custom_error out error =
+    result out (pair error (list error))
+
+
 let validator_result_printer out =
-    result out (pair string (list string))
+    validator_result_printer_with_custom_error out string
 
 
 let int_max_test max input expected () =
@@ -545,7 +549,41 @@ let validators =
     ]
 
 
-(* TODO test form validator *)
+type custom_error = Empty [@@deriving show, eq]
+
+let custom_error =
+    let error_printer =
+        testable
+          (fun ppf t ->
+            Fmt.pf ppf "%s" (show_custom_error t))
+          equal_custom_error
+    in
+    let validator (input : PersonInput.t) :
+        ( PersonValid.t,
+          custom_error )
+        Validator.validator_result =
+        let open PersonInput in
+        Validator.build PersonValid.build
+        |> Validator.validate input.name
+             (Validator.string_is_not_empty Empty)
+        |> Validator.keep input.age
+    in
+    let test input expected () =
+        let actual = validator input in
+        check
+          (validator_result_printer_with_custom_error
+             PersonValid.printer error_printer)
+          "" expected actual
+    in
+
+    [
+      ( "Returns custom errors for person",
+        `Quick,
+        test
+          { PersonInput.name = ""; PersonInput.age = 20 }
+          (Error (Empty, [ Empty ])) );
+    ]
+
 
 let () =
     Alcotest.run "Validator"
@@ -566,4 +604,5 @@ let () =
         ("all", all);
         ("whole", whole);
         ("validators", validators);
+        ("custom_error", custom_error);
       ]
