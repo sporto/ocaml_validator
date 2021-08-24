@@ -339,32 +339,35 @@ module FormValid = struct
     age : int;
     username : string option;
   }
+  [@@deriving show, eq]
 
   let build name email age username =
       { name; email; age; username }
+
+
+  let printer =
+      testable (fun ppf t -> Fmt.pf ppf "%s" (show t)) equal
 end
 
 let form_validator (input : FormInput.t) :
     (string, FormValid.t) Validator.validator_result =
     let open FormInput in
+    let open Validator in
     let validator_name =
-        Validator.string_is_not_empty "Empty"
-        |> Validator.compose
-             (Validator.string_has_min_length 4 "Too short")
+        string_is_not_empty "Empty"
+        |> compose
+             (string_has_min_length 3 "Name is too short")
     in
     let validator_email =
-        Validator.option_is_some "Missing email"
-        |> Validator.compose
-             (Validator.string_is_email "Not an email")
+        option_is_some "Missing email"
+        |> compose (string_is_email "Not an email")
     in
-    Validator.build FormValid.build
-    |> Validator.validate input.name validator_name
-    |> Validator.validate input.email validator_email
-    |> Validator.validate input.age
-         (Validator.int_min 13 "Must be 13")
-    |> Validator.validate input.username
-         (Validator.optional
-            (Validator.string_is_not_empty "Empty"))
+    build FormValid.build
+    |> validate input.name validator_name
+    |> validate input.email validator_email
+    |> validate input.age (int_min 13 "Must be 13")
+    |> validate input.username
+         (optional (string_is_not_empty "Empty"))
 
 
 let validators =
@@ -379,8 +382,26 @@ let validators =
         validator_test PersonValid.printer person_validator
           { PersonInput.name = "" }
           (Error ("Empty", [ "Empty" ])) );
+      ( "Validates a form",
+        `Quick,
+        validator_test FormValid.printer form_validator
+          {
+            FormInput.name = "Sam";
+            FormInput.email = Some "sam@sample.com";
+            FormInput.age = 14;
+            FormInput.username = None;
+          }
+          (Ok
+             {
+               FormValid.name = "Sam";
+               FormValid.email = "sam@sample.com";
+               FormValid.age = 14;
+               FormValid.username = None;
+             }) );
     ]
 
+
+(* TODO test form validator *)
 
 let () =
     Alcotest.run "Validator"
