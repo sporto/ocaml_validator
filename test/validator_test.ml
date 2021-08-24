@@ -366,7 +366,7 @@ let whole =
 
 let validator_test
     printer
-    (validator : ('e, 'i, 'o) Validator.validator)
+    (validator : ('i, 'o, 'e) Validator.validator)
     (input : 'i)
     (expected : ('o, 'e) Validator.validator_result)
     () =

@@ -5,11 +5,11 @@ type ('input, 'output) check = 'input -> 'output option
 type ('output, 'err) validator_result =
   ('output, 'err errors) result
 
-type ('err, 'input, 'output) validator =
+type ('input, 'output, 'err) validator =
   'input -> ('output, 'err) validator_result
 
-type ('err, 'input, 'output) validator_builder =
-  'err -> ('err, 'input, 'output) validator
+type ('input, 'output, 'err) validator_builder =
+  'err -> ('input, 'output, 'err) validator
 
 let custom
     (check : ('i, 'o) check)
@@ -49,7 +49,7 @@ let list_is_not_empty_check (list : 'a list) :
 
 
 let list_is_not_empty :
-    (string, 'a list, 'a list) validator_builder =
+    ('a list, 'a list, string) validator_builder =
    fun err list -> custom list_is_not_empty_check err list
 
 
@@ -61,7 +61,7 @@ let list_has_min_length_check n list =
 
 
 let list_has_min_length :
-    int -> (string, 'a list, 'a list) validator_builder =
+    int -> ('a list, 'a list, string) validator_builder =
    fun len err list ->
     custom (list_has_min_length_check len) err list
 
@@ -74,13 +74,13 @@ let list_has_max_length_check n list =
 
 
 let list_has_max_length :
-    int -> (string, 'a list, 'a list) validator_builder =
+    int -> ('a list, 'a list, string) validator_builder =
    fun len err list ->
     custom (list_has_max_length_check len) err list
 
 
 let list_every
-    (validator : (string, 'i, 'o) validator)
+    (validator : ('i, 'o, string) validator)
     (items : 'i list) =
     let results = List.map validator items in
     let errors =
@@ -104,12 +104,12 @@ let list_every
 
 
 let option_is_some :
-    (string, 'a option, 'a) validator_builder =
+    ('a option, 'a, string) validator_builder =
    fun err opt -> custom Fun.id err opt
 
 
 let optional
-    (validator : (string, 'i, 'o) validator)
+    (validator : ('i, 'o, string) validator)
     (option : 'i option) =
     match option with
     | None ->
@@ -139,7 +139,7 @@ let string_is_int_check value =
     try Some (int_of_string value) with _ -> None
 
 
-let string_is_int : (string, string, int) validator_builder
+let string_is_int : (string, int, string) validator_builder
     =
     custom string_is_int_check
 
@@ -196,7 +196,7 @@ let keep
 
 let validate
     (input : 'i)
-    (validator : ('e, 'i, 'o) validator)
+    (validator : ('i, 'o, 'e) validator)
     (accumulator : ('o -> 'next_acc, 'e errors) result) :
     ('next_acc, 'e errors) result =
     match validator input with
@@ -215,14 +215,14 @@ let validate
 
 
 let compose
-    (validator2 : (string, 'mid, 'o) validator)
-    (validator1 : (string, 'i, 'mid) validator) :
-    (string, 'i, 'o) validator =
+    (validator2 : ('mid, 'o, string) validator)
+    (validator1 : ('i, 'mid, string) validator) :
+    ('i, 'o, string) validator =
    fun (i : 'i) -> Result.bind (validator1 i) validator2
 
 
 let all
-    (validators : (string, 'io, 'io) validator list)
+    (validators : ('io, 'io, string) validator list)
     (input : 'io) =
     let results =
         List.map

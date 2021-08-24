@@ -5,43 +5,43 @@ type 'err errors = 'err * 'err list
 type ('out, 'err) validator_result =
   ('out, 'err errors) result
 
-type ('err, 'input, 'output) validator =
+type ('input, 'output, 'err) validator =
   'input -> ('output, 'err) validator_result
 
-type ('err, 'input, 'output) validator_builder =
-  'err -> ('err, 'input, 'output) validator
+type ('input, 'output, 'err) validator_builder =
+  'err -> ('input, 'output, 'err) validator
 
-val int_min : int -> (string, int, int) validator_builder
+val int_min : int -> (int, int, string) validator_builder
 (** Validate min permitted integeger *)
 
-val int_max : int -> (string, int, int) validator_builder
+val int_max : int -> (int, int, string) validator_builder
 (** Validate max permitted integeger *)
 
 (* Validate that a list is not empty *)
 val list_is_not_empty :
-  (string, 'a list, 'a list) validator_builder
+  ('a list, 'a list, string) validator_builder
 
 val list_has_max_length :
-  int -> (string, 'a list, 'a list) validator_builder
+  int -> ('a list, 'a list, string) validator_builder
 
 val list_has_min_length :
-  int -> (string, 'a list, 'a list) validator_builder
+  int -> ('a list, 'a list, string) validator_builder
 
 (* Validate a list of items. Run the given validator for each item returning all the errors. *)
 val list_every :
-  (string, 'i, 'o) validator ->
-  (string, 'i list, 'o list) validator
+  ('i, 'o, string) validator ->
+  ('i list, 'o list, string) validator
 
 (* Validate that a value is not None.
    Returns the value if Some. *)
 val option_is_some :
-  (string, 'a option, 'a) validator_builder
+  ('a option, 'a, string) validator_builder
 
 val string_is_not_empty :
   (string, string, string) validator_builder
 (** Validate if a string is not empty *)
 
-val string_is_int : (string, string, int) validator_builder
+val string_is_int : (string, int, string) validator_builder
 (* Validate if a string parses to an Int. Returns the Int if so *)
 
 (* Validate the min length of a string *)
@@ -61,7 +61,7 @@ val string_is_email :
    Run the validator only if the value is Some.
    If the value is None then just return None back. *)
 val optional :
-  (string, 'i, 'o) validator ->
+  ('i, 'o, string) validator ->
   'i option ->
   ('i option, string errors) result
 
@@ -76,7 +76,7 @@ val build :
 
 val validate :
   'input ->
-  ('err, 'input, 'output) validator ->
+  ('input, 'output, 'err) validator ->
   ('output -> 'next_acc, 'err errors) result ->
   ('next_acc, 'err errors) result
 
@@ -84,9 +84,9 @@ val validate :
    Run the first validator and if successful then the second.
    Only returns the first error. *)
 val compose :
-  (string, 'mid, 'o) validator ->
-  (string, 'i, 'mid) validator ->
-  (string, 'i, 'o) validator
+  ('mid, 'o, string) validator ->
+  ('i, 'mid, string) validator ->
+  ('i, 'o, string) validator
 
 (* Validate a value using a list of validators.
    This runs all the validators in the list.
@@ -97,8 +97,8 @@ val compose :
    Returns Ok when all validators pass.
    Returns Error when any validator fails. Error will have all failures. *)
 val all :
-  (string, 'io, 'io) validator list ->
-  (string, 'io, 'io) validator
+  ('io, 'io, string) validator list ->
+  ('io, 'io, string) validator
 
 (* Validate a structure as a whole.
 
