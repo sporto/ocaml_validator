@@ -221,6 +221,31 @@ let compose
    fun (i : 'i) -> Result.bind (validator1 i) validator2
 
 
+let all
+    (validators : (string, 'io, 'io) validator list)
+    (input : 'io) =
+    let results =
+        List.map
+          (fun validator -> validator input)
+          validators
+    in
+    let errors =
+        results
+        |> List.map (fun result ->
+               match result with
+               | Ok _ ->
+                   []
+               | Error (_first, rest) ->
+                   rest)
+        |> List.flatten
+    in
+    match List.nth_opt errors 0 with
+    | None ->
+        Ok input
+    | Some head ->
+        Error (head, errors)
+
+
 (* TODO all *)
 (* https://github.com/sporto/gleam-validator/blob/main/src/validator.gleam#L215 *)
 (* TODO whole *)

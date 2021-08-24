@@ -285,6 +285,38 @@ let optional =
     ]
 
 
+let all_test validators input expected () =
+    let actual = Validator.all validators input in
+    check
+      (validator_result_printer string)
+      "" expected actual
+
+
+let all =
+    let validators =
+        [
+          Validator.string_is_not_empty "Empty";
+          Validator.string_has_min_length 4 "Min";
+          Validator.string_has_max_length 20 "Max";
+          Validator.string_is_email "Email";
+        ]
+    in
+    [
+      ( "It passes all validators",
+        `Quick,
+        all_test validators "sam@sample.com"
+          (Ok "sam@sample.com") );
+      ( "It can fail some validators",
+        `Quick,
+        all_test validators "samsample.com"
+          (Error ("Email", [ "Email" ])) );
+      ( "It can fail many validators",
+        `Quick,
+        all_test validators ""
+          (Error ("Empty", [ "Empty"; "Min"; "Email" ])) );
+    ]
+
+
 (* Complete validators *)
 
 let validator_test
@@ -493,5 +525,6 @@ let () =
         ("string_is_int", string_is_int);
         ("string_is_not_empty", string_is_not_empty);
         ("optional", optional);
+        ("all", all);
         ("validators", validators);
       ]

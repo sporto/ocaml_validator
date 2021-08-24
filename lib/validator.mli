@@ -87,3 +87,7 @@ val compose :
   (string, 'mid, 'o) validator ->
   (string, 'i, 'mid) validator ->
   (string, 'i, 'o) validator
+
+val all :
+  (string, 'io, 'io) validator list ->
+  (string, 'io, 'io) validator
