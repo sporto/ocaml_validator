@@ -367,7 +367,8 @@ let form_validator (input : FormInput.t) :
     |> validate input.email validator_email
     |> validate input.age (int_min 13 "Must be 13")
     |> validate input.username
-         (optional (string_is_not_empty "Empty"))
+         (optional
+            (string_is_not_empty "Username is empty"))
 
 
 let validators =
@@ -398,6 +399,67 @@ let validators =
                FormValid.age = 14;
                FormValid.username = None;
              }) );
+      ( "Fails when name is too short",
+        `Quick,
+        validator_test FormValid.printer form_validator
+          {
+            FormInput.name = "S";
+            FormInput.email = Some "sam@sample.com";
+            FormInput.age = 14;
+            FormInput.username = None;
+          }
+          (Error
+             ("Name is too short", [ "Name is too short" ]))
+      );
+      ( "Fails when email is none",
+        `Quick,
+        validator_test FormValid.printer form_validator
+          {
+            FormInput.name = "Sam";
+            FormInput.email = None;
+            FormInput.age = 14;
+            FormInput.username = None;
+          }
+          (Error ("Missing email", [ "Missing email" ])) );
+      ( "Fails when not an email",
+        `Quick,
+        validator_test FormValid.printer form_validator
+          {
+            FormInput.name = "Sam";
+            FormInput.email = Some "@sample.com";
+            FormInput.age = 14;
+            FormInput.username = None;
+          }
+          (Error ("Not an email", [ "Not an email" ])) );
+      ( "Runs the optional validator",
+        `Quick,
+        validator_test FormValid.printer form_validator
+          {
+            FormInput.name = "Sam";
+            FormInput.email = Some "sam@sample.com";
+            FormInput.age = 14;
+            FormInput.username = Some "";
+          }
+          (Error
+             ("Username is empty", [ "Username is empty" ]))
+      );
+      ( "Returns all the errors",
+        `Quick,
+        validator_test FormValid.printer form_validator
+          {
+            FormInput.name = "S";
+            FormInput.email = Some "@sample.com";
+            FormInput.age = 1;
+            FormInput.username = Some "";
+          }
+          (Error
+             ( "Name is too short",
+               [
+                 "Name is too short";
+                 "Not an email";
+                 "Must be 13";
+                 "Username is empty";
+               ] )) );
     ]
 
 
