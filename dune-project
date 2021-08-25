@@ -26,4 +26,5 @@
    (>= 4.08.0))
   dune
   (alcotest :with-test)
+  (ppx_deriving :with-test)
   (odoc :with-doc)))
