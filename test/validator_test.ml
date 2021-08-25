@@ -379,7 +379,7 @@ let whole_test validator input expected () =
 let whole =
     let validator (person : PersonValid.t) =
         let open PersonValid in
-        if person.name == "Sam" then
+        if person.name = "Sam" then
           Ok person
         else
           Error "Not Sam"

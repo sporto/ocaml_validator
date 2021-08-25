@@ -9,13 +9,13 @@ homepage: "https://github.com/sporto/ocaml_validator"
 bug-reports: "https://github.com/sporto/ocaml_validator"
 depends: [
   "ocaml" {>= "4.08.0"}
-  "dune"
+  "dune" {>= "2.7"}
   "alcotest" {with-test}
   "ppx_deriving" {with-test}
   "odoc" {with-doc}
 ]
 build: [
-  ["dune" "subst"] {pinned}
+  ["dune" "subst"] {dev}
   [
     "dune"
     "build"
