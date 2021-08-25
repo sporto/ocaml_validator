@@ -1,5 +1,7 @@
 # Validator
 
+[![CI](https://github.com/sporto/ocaml_validator/actions/workflows/ci.yml/badge.svg)](https://github.com/sporto/ocaml_validator/actions/workflows/ci.yml)
+
 Create a record validator via composable sub-validators
 
 ## Installation
