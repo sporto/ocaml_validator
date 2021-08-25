@@ -24,6 +24,8 @@ jobs:
 
     steps:
 
+      - uses: extractions/setup-just@v1
+
       - name: Checkout code
         uses: actions/checkout@v2
 
@@ -41,12 +43,12 @@ jobs:
         run: opam install . --with-test
 
       - name: Check formatting
-        run: make fmt
+        run: just fmt
         if: ${{ matrix.os == 'ubuntu-latest' && always() }}
 
       - name: Run build
-        run: make build
+        run: just build
 
       - name: Run the unit tests
-        run: make test
+        run: just test
         timeout-minutes: 1
