@@ -42,10 +42,6 @@ jobs:
       - name: Install opam packages
         run: opam install . --with-test
 
-      - name: Check formatting
-        run: just fmt
-        if: ${{ matrix.os == 'ubuntu-latest' && always() }}
-
       - name: Run build
         run: just build
 
