@@ -36,8 +36,11 @@ test:
 clean: ## Clean build artifacts and other generated files
 	opam exec -- dune clean --root .
 
-doc: ## Generate odoc documentation
+# Generate odoc documentation
+doc:
 	opam exec -- dune build --root . @doc
+	rm -rf ./docs
+	cp -r _build/default/_doc/_html ./docs
 
 # Open odoc documentation with default web browser
 servedoc: doc
