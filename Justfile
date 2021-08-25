@@ -57,7 +57,7 @@ utop: ## Run a REPL and link with the project's libraries
 
 # Run the release script
 release: all
-	opam exec -- dune-release tag -d
+	opam exec -- dune-release tag
 	opam exec -- dune-release distrib
 	opam exec -- dune-release publish distrib -y
 	opam exec -- dune-release opam pkg
